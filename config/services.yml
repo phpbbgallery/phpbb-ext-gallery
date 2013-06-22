@@ -1,0 +1,25 @@
+parameters:
+    tables.gallery.config: %core.table_prefix%gallery_config
+
+services:
+    gallery.core.controller:
+        class: phpbb_ext_gallery_core_controller_main
+        arguments:
+            - @auth
+            - @cache
+            - @config
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+            - @controller.helper
+            - @gallery.core.config
+            - %core.root_path%
+            - %core.php_ext%
+    gallery.core.config:
+        class: phpbb_ext_gallery_core_extconfig
+        arguments:
+            - @config
+            - @dbal.conn
+            - %tables.gallery.config%
+
