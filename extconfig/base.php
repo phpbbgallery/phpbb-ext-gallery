@@ -103,7 +103,7 @@ abstract class phpbb_ext_gallery_core_extconfig_base implements phpbb_ext_galler
 		{
 			return $this->defaults[$this->get_config_name($config_name)];
 		}
-		return isset($this->configs[$this->get_config_name($config_name)]) && $this->configs[$this->get_config_name($config_name)];
+		return isset($this->configs[$this->get_config_name($config_name)]) ? $this->configs[$this->get_config_name($config_name)] : null;
 	}
 
 	/**
@@ -121,11 +121,11 @@ abstract class phpbb_ext_gallery_core_extconfig_base implements phpbb_ext_galler
 		if ((gettype($this->defaults[$this->get_config_name($config_name)]) == 'bool') || (gettype($this->defaults[$this->get_config_name($config_name)]) == 'boolean'))
 		{
 			$update_config = ($this->configs[$this->get_config_name($config_name)]) ? '1' : '0';
-			set_config($this->get_config_name($config_name), $update_config, $this->is_dynamic($config_name));
+			$this->phpbb_config->set($this->get_config_name($config_name), $update_config, $this->is_dynamic($config_name));
 		}
 		else
 		{
-			set_config($this->get_config_name($config_name), $this->configs[$this->get_config_name($config_name)], $this->is_dynamic($config_name));
+			$this->phpbb_config->set($this->get_config_name($config_name), $this->configs[$this->get_config_name($config_name)], $this->is_dynamic($config_name));
 		}
 	}
 
@@ -144,7 +144,7 @@ abstract class phpbb_ext_gallery_core_extconfig_base implements phpbb_ext_galler
 			return false;
 		}
 
-		set_config_count($this->get_config_name($config_name), (int) $increment, $this->is_dynamic($config_name));
+		$this->phpbb_config->increment($this->get_config_name($config_name), (int) $increment, $this->is_dynamic($config_name));
 		$this->configs[$this->get_config_name($config_name)] += (int) $increment;
 		return true;
 	}
@@ -164,7 +164,7 @@ abstract class phpbb_ext_gallery_core_extconfig_base implements phpbb_ext_galler
 			return false;
 		}
 
-		set_config_count($this->get_config_name($config_name), 0 - (int) $decrement, $this->is_dynamic($config_name));
+		$this->phpbb_config->increment($this->get_config_name($config_name), 0 - (int) $decrement, $this->is_dynamic($config_name));
 		$this->configs[$this->get_config_name($config_name)] -= (int) $decrement;
 		return true;
 	}
@@ -215,13 +215,11 @@ abstract class phpbb_ext_gallery_core_extconfig_base implements phpbb_ext_galler
 			if ((gettype($default_value) == 'bool') || (gettype($default_value) == 'boolean'))
 			{
 				$update_config = ($default_value) ? '1' : '0';
-				set_config($this->get_config_name(array($set_name, $name)), $update_config, $this->is_dynamic(array($set_name, $name)));
-				$this->phpbb_config[$this->get_config_name(array($set_name, $name))] = $update_config;
+				$this->phpbb_config->set($this->get_config_name(array($set_name, $name)), $update_config, $this->is_dynamic(array($set_name, $name)));
 			}
 			else
 			{
-				set_config($this->get_config_name(array($set_name, $name)), $default_value, $this->is_dynamic(array($set_name, $name)));
-				$this->phpbb_config[$this->get_config_name(array($set_name, $name))] = $default_value;
+				$this->phpbb_config->set($this->get_config_name(array($set_name, $name)), $default_value, $this->is_dynamic(array($set_name, $name)));
 			}
 		}
 
