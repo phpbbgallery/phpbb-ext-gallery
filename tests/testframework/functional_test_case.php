@@ -7,6 +7,8 @@
 *
 */
 
-class phpbb_ext_gallery_functional_test_case extends phpbb_functional_test_case
+namespace phpbbgallery\core\tests\testframework;
+
+abstract class functional_test_case extends \phpbb_functional_test_case
 {
 }

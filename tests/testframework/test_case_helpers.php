@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_ext_gallery_test_case_helpers extends phpbb_test_case_helpers
+namespace phpbbgallery\core\tests\testframework;
+
+abstract class test_case_helpers extends \phpbb_test_case_helpers
 {
 	/**
 	* Copied from phpbb_test_case_helpers::get_test_config() to fix some paths

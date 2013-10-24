@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_ext_gallery_database_test_connection_manager extends phpbb_database_test_connection_manager
+namespace phpbbgallery\core\tests\testframework;
+
+class database_test_connection_manager extends \phpbb_database_test_connection_manager
 {
 	public function load_schema()
 	{
