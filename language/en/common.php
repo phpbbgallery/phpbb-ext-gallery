@@ -7,16 +7,16 @@
 *
 */
 
-namespace phpbbgallery\core;
-
-/**
-* @ignore
-*/
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-class ext extends \phpbb\extension\base
+if (empty($lang) || !is_array($lang))
 {
+	$lang = array();
 }
+
+$lang = array_merge($lang, array(
+	'EXT_GALLERY'		=> 'Gallery',
+));
