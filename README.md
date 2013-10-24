@@ -10,7 +10,7 @@ Go to "ACP" > "Customise" > "Extensions" and enable the "phpBB Gallery Extension
 
 ##Tests and Continuous Intergration
 
-[![Build Status](https://travis-ci.org/nickvergessen/phpbb-ext-gallery.png?branch=master)](https://travis-ci.org/nickvergessen/phpbb-ext-gallery)
+[![Build Status](https://travis-ci.org/nickvergessen/phpbb-ext-gallery.png?branch=develop-ascraeus)](https://travis-ci.org/nickvergessen/phpbb-ext-gallery)
 
 We use Travis-CI as a continous intergtation server and phpunit for our unit testing. See more information on the [phpBB development wiki](https://wiki.phpbb.com/Unit_Tests).
 
