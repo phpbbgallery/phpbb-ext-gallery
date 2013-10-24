@@ -11,7 +11,6 @@ namespace phpbbgallery\core\tests\systemtests;
 
 class base_test extends \phpbbgallery\core\tests\testframework\test_case
 {
-
 	public function test_check()
 	{
 		$this->assertTrue(true);

@@ -13,9 +13,6 @@ class database_test_connection_manager extends \phpbb_database_test_connection_m
 {
 	public function load_schema()
 	{
-		// Load the phpBB schema's
-		parent::load_schema();
-
 		$this->ensure_connected(__METHOD__);
 
 		$directory = dirname(__FILE__) . '/../schemas/';

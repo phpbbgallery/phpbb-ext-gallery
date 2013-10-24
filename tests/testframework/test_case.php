@@ -15,7 +15,7 @@ abstract class test_case extends \phpbb_test_case
 	{
 		if (!$this->test_case_helpers)
 		{
-			$this->test_case_helpers = new \phpbbgallery\core\tests\testframework\gallery_test_case_helpers($this);
+			$this->test_case_helpers = new \phpbbgallery\core\tests\testframework\test_case_helpers($this);
 		}
 
 		return $this->test_case_helpers;
