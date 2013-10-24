@@ -1,0 +1,13 @@
+services:
+    phpbbgallery.core.controller.index:
+        class: phpbbgallery\core\controller\index
+        arguments:
+            - @auth
+            - @config
+            - @controller.helper
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
