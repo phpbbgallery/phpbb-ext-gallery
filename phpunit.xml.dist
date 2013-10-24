@@ -14,7 +14,6 @@
     <testsuites>
         <testsuite name="phpBB Gallery Test Suite">
             <directory suffix="_test.php">./tests/</directory>
-            <exclude>./tests/vendor</exclude>
         </testsuite>
     </testsuites>
 

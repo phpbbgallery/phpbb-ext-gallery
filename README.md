@@ -4,17 +4,13 @@
 
 Clone into phpBB/ext/gallery/core:
 
-    git clone https://github.com/nickvergessen/phpbb3-ext-gallery.git phpBB/ext/gallery/core
-
-Add to database by inserting a row into phpbb_ext
-
-    INSERT INTO phpbb_ext (ext_name, ext_active, ext_state) VALUES ('gallery/core', 0, '');
+    git clone https://github.com/nickvergessen/phpbb-ext-gallery.git phpBB/ext/phpbbgallery/core
 
 Go to "ACP" > "Customise" > "Extensions" and enable the "phpBB Gallery Extension" extension.
 
 ##Tests and Continuous Intergration
 
-[![Build Status](https://travis-ci.org/nickvergessen/phpbb3-ext-gallery.png?branch=master)](https://travis-ci.org/nickvergessen/phpbb3-ext-gallery)
+[![Build Status](https://travis-ci.org/nickvergessen/phpbb-ext-gallery.png?branch=master)](https://travis-ci.org/nickvergessen/phpbb-ext-gallery)
 
 We use Travis-CI as a continous intergtation server and phpunit for our unit testing. See more information on the [phpBB development wiki](https://wiki.phpbb.com/Unit_Tests).
 

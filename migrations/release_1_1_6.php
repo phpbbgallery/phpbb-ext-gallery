@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_ext_gallery_core_migrations_1_1_6 extends phpbb_db_migration
+namespace phpbbgallery\core\migrations;
+
+class release_1_1_6 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -23,7 +25,7 @@ class phpbb_ext_gallery_core_migrations_1_1_6 extends phpbb_db_migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_dev');
+		return array('\phpbb\db\migration\data\v310\dev');
 	}
 
 	public function update_schema()
@@ -341,43 +343,43 @@ class phpbb_ext_gallery_core_migrations_1_1_6 extends phpbb_db_migration
 			// ACP
 			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'PHPBB_GALLERY')),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\acp\main_module',
 				'module_langname'	=> 'ACP_GALLERY_OVERVIEW',
 				'module_mode'		=> 'overview',
 				'module_auth'		=> 'acl_a_gallery_manage',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery_config',
+				'module_basename'	=> '\phpbbgallery\core\acp\config_module',
 				'module_langname'	=> 'ACP_GALLERY_CONFIGURE_GALLERY',
 				'module_mode'		=> 'main',
 				'module_auth'		=> 'acl_a_gallery_manage',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery_albums',
+				'module_basename'	=> '\phpbbgallery\core\acp\albums_module',
 				'module_langname'	=> 'ACP_GALLERY_MANAGE_ALBUMS',
 				'module_mode'		=> 'manage',
 				'module_auth'		=> 'acl_a_gallery_albums',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery_permissions',
+				'module_basename'	=> '\phpbbgallery\core\acp\permissions_module',
 				'module_langname'	=> 'ACP_GALLERY_ALBUM_PERMISSIONS',
 				'module_mode'		=> 'manage',
 				'module_auth'		=> 'acl_a_gallery_albums',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery_permissions',
+				'module_basename'	=> '\phpbbgallery\core\acp\permissions_module',
 				'module_langname'	=> 'ACP_GALLERY_ALBUM_PERMISSIONS_COPY',
 				'module_mode'		=> 'copy',
 				'module_auth'		=> 'acl_a_gallery_albums',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\acp\gallery_module',
 				'module_langname'	=> 'ACP_IMPORT_ALBUMS',
 				'module_mode'		=> 'import_images',
 				'module_auth'		=> 'acl_a_gallery_import',
 			))),
 			array('module.add', array('acp', 'PHPBB_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\acp\gallery_module',
 				'module_langname'	=> 'ACP_GALLERY_CLEANUP',
 				'module_mode'		=> 'cleanup',
 				'module_auth'		=> 'acl_a_gallery_cleanup',
@@ -386,25 +388,25 @@ class phpbb_ext_gallery_core_migrations_1_1_6 extends phpbb_db_migration
 			// UCP
 			array('module.add', array('ucp', '', 'UCP_GALLERY')),
 			array('module.add', array('ucp', 'UCP_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\ucp\gallery_module',
 				'module_langname'	=> 'UCP_GALLERY_SETTINGS',
 				'module_mode'		=> 'manage_settings',
 				'module_auth'		=> '',
 			))),
 			array('module.add', array('ucp', 'UCP_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\ucp\gallery_module',
 				'module_langname'	=> 'UCP_GALLERY_PERSONAL_ALBUMS',
 				'module_mode'		=> 'manage_albums',
 				'module_auth'		=> '',
 			))),
 			array('module.add', array('ucp', 'UCP_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\ucp\gallery_module',
 				'module_langname'	=> 'UCP_GALLERY_WATCH',
 				'module_mode'		=> 'manage_subscriptions',
 				'module_auth'		=> '',
 			))),
 			array('module.add', array('ucp', 'UCP_GALLERY', array(
-				'module_basename'	=> 'gallery',
+				'module_basename'	=> '\phpbbgallery\core\ucp\gallery_module',
 				'module_langname'	=> 'UCP_GALLERY_FAVORITES',
 				'module_mode'		=> 'manage_favorites',
 				'module_auth'		=> '',
@@ -419,7 +421,6 @@ class phpbb_ext_gallery_core_migrations_1_1_6 extends phpbb_db_migration
 			))),
 
 			// @todo: ADD BBCODE
-			// @todo: ADD config values
 			array('custom', array(array(&$this, 'install_config'))),
 		);
 	}
