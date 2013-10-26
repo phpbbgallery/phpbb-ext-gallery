@@ -16,9 +16,13 @@ services:
     phpbbgallery.core.albums.display:
         class: phpbbgallery\core\albums\display
         arguments:
+            - @config
+            - @controller.helper
             - @dbal.conn
+            - @template
             - @user
             - @phpbbgallery.core.albums.nestedset
+            - @phpbbgallery.core.auth
             - @phpbbgallery.core.helpers.albums
             - @phpbbgallery.core.helpers.tables
 
@@ -35,3 +39,6 @@ services:
             - phpbbgallery.table_lock.albums
             - @config
             - @dbal.conn
+
+    phpbbgallery.core.auth:
+        class: phpbbgallery\core\mock\auth
