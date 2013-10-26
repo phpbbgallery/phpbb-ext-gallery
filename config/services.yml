@@ -1,2 +1,37 @@
 imports:
     - { resource: controller.yml }
+    - { resource: tables.yml }
+
+services:
+    phpbbgallery.core.helpers.albums:
+        class: phpbbgallery\core\helpers\albums
+
+    phpbbgallery.core.helpers.tables:
+        class: phpbbgallery\core\helpers\tables
+        arguments:
+            - %tables.phpbbgallery.albums%
+            - %tables.phpbbgallery.albums_track%
+            - %tables.phpbbgallery.contests%
+
+    phpbbgallery.core.albums.display:
+        class: phpbbgallery\core\albums\display
+        arguments:
+            - @dbal.conn
+            - @user
+            - @phpbbgallery.core.albums.nestedset
+            - @phpbbgallery.core.helpers.albums
+            - @phpbbgallery.core.helpers.tables
+
+    phpbbgallery.core.albums.nestedset:
+        class: phpbbgallery\core\albums\nestedset
+        arguments:
+            - @dbal.conn
+            - @phpbbgallery.core.albums.table_lock
+            - %tables.phpbbgallery.albums%
+
+    phpbbgallery.core.albums.table_lock:
+        class: phpbb\lock\db
+        arguments:
+            - phpbbgallery.table_lock.albums
+            - @config
+            - @dbal.conn

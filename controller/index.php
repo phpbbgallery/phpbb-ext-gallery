@@ -22,10 +22,11 @@ class index
 	* @param \phpbb\request\request			$request
 	* @param \phpbb\template\template		$template
 	* @param \phpbb\user					$user
+	* @param \phpbbgallery\core\albums\display	$display
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbgallery\core\albums\display $display, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -34,6 +35,7 @@ class index
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->display = $display;
 		$this->root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -46,6 +48,8 @@ class index
 	public function nyf()
 	{
 		$this->common_index();
+
+		$this->display->display_albums('', false, false);
 
 		return $this->helper->render('gallery_body.html', $this->user->lang('EXT_GALLERY'));
 	}

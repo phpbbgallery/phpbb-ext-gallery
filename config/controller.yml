@@ -9,5 +9,6 @@ services:
             - @request
             - @template
             - @user
+            - @phpbbgallery.core.albums.display
             - %core.root_path%
             - %core.php_ext%

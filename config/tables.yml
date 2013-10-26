@@ -1,0 +1,4 @@
+parameters:
+    tables.phpbbgallery.albums: %core.table_prefix%gallery_albums
+    tables.phpbbgallery.albums_track: %core.table_prefix%gallery_albums_track
+    tables.phpbbgallery.contests: %core.table_prefix%gallery_contests
