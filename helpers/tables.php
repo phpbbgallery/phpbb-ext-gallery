@@ -30,12 +30,13 @@ class tables
 	*
 	* @param string $albums
 	*/
-	public function __construct($albums, $album_tracking, $contests)
+	public function __construct($albums, $album_tracking, $contests, $moderators_cache)
 	{
 		$this->tables = array(
 			'albums'			=> $albums,
 			'album_tracking'	=> $album_tracking,
 			'contests'			=> $contests,
+			'moderators_cache'	=> $moderators_cache,
 		);
 	}
 

@@ -10,17 +10,21 @@ services:
         class: phpbbgallery\core\helpers\tables
         arguments:
             - %tables.phpbbgallery.albums%
-            - %tables.phpbbgallery.albums_track%
+            - %tables.phpbbgallery.albums_tracking%
             - %tables.phpbbgallery.contests%
+            - %tables.phpbbgallery.moderators_cache%
 
     phpbbgallery.core.albums.display:
         class: phpbbgallery\core\albums\display
         arguments:
+            - @auth
             - @config
             - @controller.helper
             - @dbal.conn
             - @template
             - @user
+            - %core.root_path%
+            - %core.php_ext%
             - @phpbbgallery.core.albums.nestedset
             - @phpbbgallery.core.auth
             - @phpbbgallery.core.helpers.albums

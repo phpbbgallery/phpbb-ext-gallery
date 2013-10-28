@@ -49,7 +49,7 @@ class index
 	{
 		$this->common_index();
 
-		$this->display->display_albums('', false, false);
+		$this->display->display_albums('');
 
 		return $this->helper->render('gallery_body.html', $this->user->lang('EXT_GALLERY'));
 	}

@@ -19,6 +19,9 @@ if (!defined('IN_PHPBB'))
 
 class display
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -49,26 +52,109 @@ class display
 	/**
 	* Constructor
 	*
+	* @param	\phpbb\auth\auth				$auth
 	* @param	\phpbb\config\config			$config
 	* @param	\phpbb\controller\helper		$helper
 	* @param	\phpbb\db\driver\driver			$db
 	* @param	\phpbb\template\template		$template
 	* @param	\phpbb\user						$user
+	* @param	string			$phpbb_root_path
+	* @param	string			$php_ext
 	* @param	\phpbbgallery\core\albums\nestedset		$nestedset
 	* @param	\phpbbgallery\core\auth\auth_interface	$gallery_auth
 	* @param	\phpbbgallery\core\helpers\albums		$albums
 	* @param	\phpbbgallery\core\helpers\tables		$tables
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\template\template $template, \phpbb\user $user, \phpbbgallery\core\albums\nestedset $nestedset, \phpbbgallery\core\auth\auth_interface $gallery_auth, \phpbbgallery\core\helpers\albums $albums, \phpbbgallery\core\helpers\tables $tables)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path, $php_ext, \phpbbgallery\core\albums\nestedset $nestedset, \phpbbgallery\core\auth\auth_interface $gallery_auth, \phpbbgallery\core\helpers\albums $albums, \phpbbgallery\core\helpers\tables $tables)
 	{
+		$this->auth = $auth;
 		$this->helper = $helper;
 		$this->db = $db;
 		$this->template = $template;
 		$this->user = $user;
+		$this->root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 		$this->nestedset = $nestedset;
 		$this->gallery_auth = $gallery_auth;
 		$this->albums = $albums;
 		$this->tables = $tables;
+	}
+
+	/**
+	* Obtain list of moderators of each album
+	*
+	* borrowed from phpBB3
+	* @author: phpBB Group
+	* @function: get_forum_moderators
+	*/
+	public function get_moderators(&$album_moderators, $album_id = false)
+	{
+		$album_id_ary = array();
+
+		if ($album_id !== false)
+		{
+			if (!is_array($album_id))
+			{
+				$album_id = array($album_id);
+			}
+
+			// Exchange key/value pair to be able to faster check for the album id existence
+			$album_id_ary = array_flip($album_id);
+		}
+
+		$sql_array = array(
+			'SELECT'	=> 'm.*, u.user_colour, g.group_colour, g.group_type',
+			'FROM'		=> array($this->tables->get('moderators_cache') => 'm'),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'm.user_id = u.user_id',
+				),
+				array(
+					'FROM'	=> array(GROUPS_TABLE => 'g'),
+					'ON'	=> 'm.group_id = g.group_id',
+				),
+			),
+
+			'WHERE'		=> 'm.display_on_index = 1',
+			'ORDER_BY'	=> 'm.group_id ASC, m.user_id ASC',
+		);
+
+		// We query every album here because for caching we should not have any parameter.
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql, 3600);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$a_id = (int) $row['album_id'];
+
+			if (!isset($album_id_ary[$a_id]))
+			{
+				continue;
+			}
+
+			if (!empty($row['user_id']))
+			{
+				$album_moderators[$a_id][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+			}
+			else
+			{
+				$group_name = (($row['group_type'] == GROUP_SPECIAL) ? $this->user->lang['G_' . $row['group_name']] : $row['group_name']);
+
+				if ($this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'))
+				{
+					$album_moderators[$a_id][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
+				}
+				else
+				{
+					$album_moderators[$a_id][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid($this->root_path . 'memberlist.'. $this->php_ext, 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
+				}
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return;
 	}
 
 	/**
@@ -83,31 +169,14 @@ class display
 		$album_rows = $subalbums = $album_ids = $album_ids_moderator = $album_moderators = $active_album_ary = array();
 		$parent_id = $visible_albums = 0;
 		$sql_from = '';
-		$mode = request_var('mode', '');
-
-		// Mark albums read?
-		$mark_read = request_var('mark', '');
-
-		if ($mark_read == 'all')
-		{
-			$mark_read = '';
-		}
 
 		if (!$root_data)
 		{
-			if ($mark_read == 'albums')
-			{
-				$mark_read = 'all';
-			}
 			$root_data = array('album_id' => 0);
 			$sql_where = 'a.album_user_id = ' . $this->albums->get_owner('public');
 		}
 		else if ($root_data == 'personal')
 		{
-			if ($mark_read == 'albums')
-			{
-				$mark_read = 'all';
-			}
 			$root_data = array('album_id' => 0);//@todo: I think this is incorrect!?
 			$sql_where = 'a.album_user_id > ' . phpbb_ext_gallery_core_album::PUBLIC_ALBUM;
 			$num_pegas = phpbb_gallery_config::get('num_pegas');
@@ -151,7 +220,7 @@ class display
 			$start = request_var('start', 0);
 			$limit = phpbb_gallery_config::get('pegas_per_page');
 			$template->assign_vars(array(
-				'PAGINATION'				=> generate_pagination($phpbb_ext_gallery->url->append_sid('index', 'mode=' . $mode . (($first_char) ? '&amp;first_char=' . $first_char : '')), $num_pegas, $limit, $start),
+				'PAGINATION'				=> generate_pagination($phpbb_ext_gallery->url->append_sid('index', 'mode=' . (($first_char) ? '&amp;first_char=' . $first_char : '')), $num_pegas, $limit, $start),
 				'TOTAL_PGALLERIES_SHORT'	=> $user->lang('TOTAL_PEGAS_SHORT_SPRINTF', $num_pegas),
 				'PAGE_NUMBER'				=> on_page($num_pegas, $limit, $start),
 			));
@@ -206,16 +275,6 @@ class display
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$album_id = $row['album_id'];
-
-			// Mark albums read?
-			if ($mark_read == 'albums' || $mark_read == 'all')
-			{
-				if ($this->gallery_auth->acl_check('a_list', $album_id, $row['album_user_id']))
-				{
-					$album_ids[] = $album_id;
-					continue;
-				}
-			}
 
 			// Category with no members
 			if (!$row['album_type'] && ($row['left_id'] + 1 == $row['right_id']))
@@ -296,35 +355,6 @@ class display
 		}
 		$this->db->sql_freeresult($result);
 
-		// Handle marking albums
-		if ($mark_read == 'albums' || $mark_read == 'all')
-		{
-			$redirect = build_url('mark', 'hash');
-			$token = request_var('hash', '');
-			if (check_link_hash($token, 'global'))
-			{
-				if ($mark_read == 'all')
-				{
-					phpbb_gallery_misc::markread('all');
-					$message = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>');
-				}
-				else
-				{
-					phpbb_gallery_misc::markread('albums', $album_ids);
-					$message = sprintf($user->lang['RETURN_ALBUM'], '<a href="' . $redirect . '">', '</a>');
-				}
-				meta_refresh(3, $redirect);
-				trigger_error($user->lang['ALBUMS_MARKED'] . '<br /><br />' . $message);
-			}
-			else
-			{
-				$message = sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
-				meta_refresh(3, $redirect);
-				trigger_error($message);
-			}
-		}
-
-
 		// Grab moderators ... if necessary
 		if ($display_moderators)
 		{
@@ -332,7 +362,7 @@ class display
 			{
 				$album_ids_moderator[] = $root_data['album_id'];
 			}
-			self::get_moderators($album_moderators, $album_ids_moderator);
+			$this->get_moderators($album_moderators, $album_ids_moderator);
 		}
 
 		// Used to tell whatever we have to create a dummy category or not.
@@ -356,7 +386,7 @@ class display
 			}
 
 			$visible_albums++;
-			if (($mode == 'personal') && (($visible_albums <= $start) || ($visible_albums > ($start + $limit))))
+			if (isset($mode_personal) && (($visible_albums <= $start) || ($visible_albums > ($start + $limit))))
 			{
 				continue;
 			}
@@ -509,7 +539,7 @@ class display
 		}
 
 		$this->template->assign_vars(array(
-			'U_MARK_ALBUMS'		=> ($this->user->data['is_registered']) ? $this->helper->url('gallery/album/' . $root_data['album_id'] . 'markread', 'hash=' . generate_link_hash('global')) : '',
+			'U_MARK_ALBUMS'		=> ($this->user->data['is_registered']) ? $this->helper->url('gallery/album/' . $root_data['album_id'] . '/markread', 'hash=' . generate_link_hash('global')) : '',
 			'S_HAS_SUBALBUM'	=> ($visible_albums) ? true : false,
 			'L_SUBFORUM'		=> ($visible_albums == 1) ? $this->user->lang('SUBALBUM') : $this->user->lang('SUBALBUMS'),
 			'LAST_POST_IMG'		=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
