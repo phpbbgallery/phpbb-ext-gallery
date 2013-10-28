@@ -20,6 +20,9 @@ if (!defined('IN_PHPBB'))
 class albums
 {
 	const OWNER_PUBLIC		= 0;
+	const OWNER_SELF		= -2;
+	const OWNER_PERSONAL	= -3;
+	const OWNER_PERMISSIONS	= -39839;
 
 	const TYPE_CAT			= 0;
 	const TYPE_UPLOAD		= 1;
@@ -34,6 +37,12 @@ class albums
 		{
 			case 'public':
 				return self::OWNER_PUBLIC;
+			case 'self':
+				return self::OWNER_SELF;
+			case 'personal':
+				return self::OWNER_PERSONAL;
+			case 'permissions':
+				return self::OWNER_PERMISSIONS;
 		}
 		throw new \phpbbgallery\core\exception('Album owner [' . $owner . '] not found');
 	}

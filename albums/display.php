@@ -31,11 +31,17 @@ class display
 	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
+	/** @var \phpbb\template\template */
+	protected $template;
+
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\template\template */
-	protected $template;
+	/** @var string */
+	protected $root_path;
+
+	/** @var string */
+	protected $php_ext;
 
 	/** @var \phpbbgallery\core\albums\nestedset */
 	protected $nestedset;

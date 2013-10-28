@@ -19,5 +19,5 @@ if (!defined('IN_PHPBB'))
 
 interface auth_interface
 {
-	public function acl_check($acl, $a_id, $u_id);
+	public function acl_check($acl, $a_id, $u_id = false);
 }

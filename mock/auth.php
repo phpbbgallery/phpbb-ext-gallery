@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 
 class auth implements \phpbbgallery\core\auth\auth_interface
 {
-	public function acl_check($acl, $a_id, $u_id)
+	public function acl_check($acl, $a_id, $u_id = false)
 	{
 		return true;
 	}

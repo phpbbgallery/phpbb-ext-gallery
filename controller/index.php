@@ -12,6 +12,42 @@ namespace phpbbgallery\core\controller;
 
 class index
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\db\driver\driver */
+	protected $db;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string */
+	protected $root_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/** @var \phpbbgallery\core\albums\display */
+	protected $display;
+
+	/** @var \phpbbgallery\core\auth\auth_interface */
+	protected $gallery_auth;
+
+	/** @var \phpbbgallery\core\helpers\albums */
+	protected $albums;
+
 	/**
 	* Constructor
 	*
@@ -22,11 +58,13 @@ class index
 	* @param \phpbb\request\request			$request
 	* @param \phpbb\template\template		$template
 	* @param \phpbb\user					$user
-	* @param \phpbbgallery\core\albums\display	$display
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
+	* @param \phpbbgallery\core\albums\display	$display
+	* @param \phpbbgallery\core\auth			$gallery_auth
+	* @param \phpbbgallery\core\helpers\albums	$albums
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbgallery\core\albums\display $display, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path, $php_ext, \phpbbgallery\core\albums\display $display, \phpbbgallery\core\auth\auth_interface $gallery_auth, \phpbbgallery\core\helpers\albums $albums)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -35,17 +73,22 @@ class index
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->display = $display;
 		$this->root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+
+		$this->display = $display;
+		$this->gallery_auth = $gallery_auth;
+		$this->albums = $albums;
 	}
 
 	/**
-	* Display statistics for the users
+	* Display basic gallery index
+	*
+	* Also displays Birthdays, Who is Online, Loginbox, Statistics
 	*
 	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function nyf()
+	public function gallery()
 	{
 		$this->common_index();
 
@@ -54,6 +97,11 @@ class index
 		return $this->helper->render('gallery_body.html', $this->user->lang('EXT_GALLERY'));
 	}
 
+	/**
+	* Displays Birthdays, Who is Online, Loginbox, Statistics
+	*
+	* @return null
+	*/
 	protected function common_index()
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', 'index');
@@ -74,11 +122,16 @@ class index
 
 			'TOTAL_IMAGES'			=> ($this->config['phpbb_gallery_disp_statistic']) ? $this->user->lang('TOTAL_IMAGES', (int) $this->config['phpbb_gallery_num_images']) : '',
 			'TOTAL_COMMENTS'		=> ($this->config['phpbb_gallery_allow_comments']) ? $this->user->lang('TOTAL_COMMENTS', (int) $this->config['phpbb_gallery_num_comments']) : '',
-			//'TOTAL_PGALLERIES'		=> ($phpbb_ext_gallery->auth->acl_check('a_list', phpbb_ext_gallery_core_auth::PERSONAL_ALBUM)) ? $this->user->lang('TOTAL_PEGAS_SPRINTF', $this->config['phpbb_gallery_num_pegas']) : '',
-			//'NEWEST_PGALLERIES'		=> ($this->config['phpbb_gallery_num_pegas']) ? $this->user->lang('NEWEST_PGALLERY', get_username_string('full', $this->config['phpbb_gallery_newest_pega_user_id'], $this->config['phpbb_gallery_newest_pega_username'], $this->config['phpbb_gallery_newest_pega_user_colour'], '', $phpbb_ext_gallery->url->append_sid('album', 'album_id=' . $this->config['phpbb_gallery_newest_pega_album_id']))) : '',
+			'TOTAL_PGALLERIES'		=> ($this->gallery_auth->acl_check('a_list', $this->albums->get_owner('personal'))) ? $this->user->lang('TOTAL_PEGAS_SPRINTF', $this->config['phpbb_gallery_num_pegas']) : '',
+			'NEWEST_PGALLERIES'		=> ($this->gallery_auth->acl_check('a_list', $this->albums->get_owner('personal')) || $this->config['phpbb_gallery_num_pegas']) ? $this->user->lang('NEWEST_PGALLERY', get_username_string('full', $this->config['phpbb_gallery_newest_pega_user_id'], $this->config['phpbb_gallery_newest_pega_username'], $this->config['phpbb_gallery_newest_pega_user_colour'], '', $this->helper->url('gallery/album/' . $this->config['phpbb_gallery_newest_pega_album_id']))) : '',
 		));
 	}
 
+	/**
+	* Generates the birthday list for the index
+	*
+	* @return null
+	*/
 	protected function generate_birthday_list()
 	{
 		$birthday_list = array();
@@ -109,7 +162,7 @@ class index
 				$birthday_year		= (int) substr($row['user_birthday'], -4);
 				$birthday_age		= ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
 
-				$template->assign_block_vars('birthdays', array(
+				$this->template->assign_block_vars('birthdays', array(
 					'USERNAME'	=> $birthday_username,
 					'AGE'		=> $birthday_age,
 				));
@@ -128,6 +181,11 @@ class index
 		));
 	}
 
+	/**
+	* Generates the group legend list for the index
+	*
+	* @return null
+	*/
 	protected function generate_group_legend()
 	{
 		$order_legend = ($this->config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
