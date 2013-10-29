@@ -170,7 +170,7 @@ class display
 	* @author: phpBB Group
 	* @function: display_forums
 	*/
-	public function display_albums($root_data = '', $display_moderators = true, $return_moderators = false)
+	public function display_albums($root_data = false, $display_moderators = true, $return_moderators = false)
 	{
 		$album_rows = $subalbums = $album_ids = $album_ids_moderator = $album_moderators = $active_album_ary = array();
 		$parent_id = $visible_albums = 0;

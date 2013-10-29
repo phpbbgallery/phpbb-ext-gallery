@@ -1,3 +1,8 @@
 phpbbgallery_core_index_controller:
     pattern: /gallery
     defaults: { _controller: phpbbgallery.core.controller.index:gallery }
+
+
+phpbbgallery_core_album_controller:
+    resource: "routing_album.yml"
+    prefix:   /gallery/album

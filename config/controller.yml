@@ -14,3 +14,20 @@ services:
             - @phpbbgallery.core.albums.display
             - @phpbbgallery.core.auth
             - @phpbbgallery.core.helpers.albums
+
+    phpbbgallery.core.controller.album:
+        class: phpbbgallery\core\controller\album
+        arguments:
+            - @auth
+            - @config
+            - @controller.helper
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - @phpbbgallery.core.albums.display
+            - @phpbbgallery.core.auth
+            - @phpbbgallery.core.helpers.albums
+            - @phpbbgallery.core.helpers.tables
