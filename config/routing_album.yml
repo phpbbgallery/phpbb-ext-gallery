@@ -1,0 +1,5 @@
+phpbbgallery_core_album_display_controller:
+    pattern: /{album_id}
+    defaults: { _controller: phpbbgallery.core.controller.album:display }
+    requirements:
+        album_id:   \d+
