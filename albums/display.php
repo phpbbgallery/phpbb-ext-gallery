@@ -559,4 +559,21 @@ class display
 
 		return array($active_album_ary, array());
 	}
+
+	public function display_navlinks($album_data)
+	{
+		$navlinks = $this->nestedset->set_sql_where($album_data['album_user_id'])->get_path_basic_data($album_data);
+		foreach ($navlinks as $navlink)
+		{
+			$this->template->assign_block_vars('navlinks', array(
+				'U_VIEW_FORUM'		=> $this->helper->url('gallery/album/' . $navlink['album_id']),
+				'FORUM_NAME'		=> $navlink['album_name'],
+			));
+		}
+
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'		=> $this->helper->url('gallery/album/' . $album_data['album_id']),
+			'FORUM_NAME'		=> $album_data['album_name'],
+		));
+	}
 }

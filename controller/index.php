@@ -94,6 +94,11 @@ class index
 
 		$this->display->display_albums('');
 
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'		=> $this->helper->url('gallery'),
+			'FORUM_NAME'		=> $this->user->lang('EXT_GALLERY'),
+		));
+
 		return $this->helper->render('gallery_body.html', $this->user->lang('EXT_GALLERY'));
 	}
 

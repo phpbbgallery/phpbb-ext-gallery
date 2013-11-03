@@ -45,4 +45,20 @@ class nestedset extends \phpbb\tree\nestedset
 			)
 		);
 	}
+
+	/**
+	* Set additional sql where restrictions
+	*
+	* @param string		$operator		SQL operator that needs to be prepended to sql_where,
+	*									if it is not empty.
+	* @param string		$column_prefix	Prefix that needs to be prepended to column names
+	* @return string		Returns additional where statements to narrow down the tree,
+	*						prefixed with operator and prepended column_prefix to column names
+	*/
+	public function set_sql_where($user_id = 0)
+	{
+		$this->sql_where = '%salbum_user_id = ' . (int) $user_id;
+
+		return $this;
+	}
 }
