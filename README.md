@@ -1,6 +1,6 @@
-# pPlease see this other reposiroty for phpBB Gallery extension: https://github.com/satanasov/phpbbgallery.
+# Please see this correct repository for phpBB Gallery extension for phpBB 3.1.x: https://github.com/satanasov/phpbbgallery.
 
-# phpBB 3.1 Extension - Gallery Extension
+## phpBB 3.1 Extension - Gallery Extension
 
 ## Installation
 
